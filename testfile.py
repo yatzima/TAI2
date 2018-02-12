@@ -53,7 +53,7 @@ def syn1(N):
     """ data(samples, features)"""
 
     global seed
-
+    print("Frida testar")
     data = np.empty(shape=(N, 2), dtype=np.float32)
     tar = np.empty(shape=(N,), dtype=np.float32)
     N1 = int(N / 2)
