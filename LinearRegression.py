@@ -26,8 +26,15 @@ plt.legend()
 plt.show()
 
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
-def batchGradDes(ds):
+def batchGradDes(ds, alpha):
     w_f = [0,0] #french
     w_e = [0,0] #english
     wf = np.array(w_f)
     we = np.array(w_e)
+
+#For a data set ds and weight array w, find the squared loss
+def loss(x, y, w):
+    i=0
+    for value in y:
+        (value-(w[1]*x[i]+w[0]))**2
+        i=i+1
