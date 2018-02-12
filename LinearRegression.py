@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 x1, y1 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
 x2, y2 = np.loadtxt('salammbo_a_fr', delimiter=',', unpack=True)
-alfa = 1
+alpha = 1
 epsilon = 0.1
 
 x1 = (x1 - np.min(x1))/(np.max(x1) - np.min(x1))
@@ -27,10 +27,6 @@ plt.title('French')
 plt.legend()
 plt.show()
 
-gradDes(x1,y1,alfa) #English regression
-gradDes(x2,y2,alfa) #French regression
-
-
 
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
 def batchGradDes(x, y, alpha):
@@ -40,6 +36,7 @@ def batchGradDes(x, y, alpha):
     while(dSSE(x, y ,w) > epsilon):
         w[0] = w[0] + (alpha/q)*sum(y - (w*x))
         w[1] = w[1] + (alpha/q)*sum(y - (w*x))
+    return w
 
 #For a data set ds and weight array w, find the squared loss
 def loss(x, y, w):
@@ -48,10 +45,21 @@ def loss(x, y, w):
         (value-(w[1]*x[i]+w[0]))**2
         i=i+1
 
-def stochGradDes(x,y,alfa)
+def stochGradDes(x,y,alpha)
+    w = [0, 0]
+    w = np.array(w)
+    q = 15
+    while (dSSE(x, y, w) > epsilon):
+        w[0] = w[0] + (alpha / q) * sum(y - (w * x))
+        w[1] = w[1] + (alpha / q) * sum(y - (w * x))
+    return w
 
 def dSSE(x, y, w):
     w[0] = -2*np.sum(y - w*x)
     w[1] = -2*np.sum(y - w*x)
     return w
 
+batchGradDes(x1,y1,alpha) #English regression
+batchGradDes(x2,y2,alpha) #French regression
+stochGradDes(x1,y1,alpha) #English regression
+stochGradDes(x2,y2,alpha) #French regression
