@@ -53,7 +53,8 @@ def loss(x, y, w):
         (value-(w[1]*x[i]+w[0]))**2
         i=i+1
 
-def stochGradDes(x,y,alpha)
+
+def stochGradDes(x, y, alpha):
     w = [0, 0]
     w = np.array(w)
     q = 15
@@ -61,6 +62,7 @@ def stochGradDes(x,y,alpha)
         w[0] = w[0] + (alpha / q) * sum(y - (w * x))
         w[1] = w[1] + (alpha / q) * sum(y - (w * x))
     return w
+
 
 def dSSE(x, y, w):
     #w[0] = -2*np.sum(y - w*x)
