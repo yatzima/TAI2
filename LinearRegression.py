@@ -37,7 +37,7 @@ x2 = np.vstack([a,x2]).T
 
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
 def batchGradDes(x, y, alpha):
-    w = [0, 0]
+    w = [0.5, 0.5]
     w = np.array(w)
     q = np.size(x)
     while(dSSE(x, y ,w) > epsilon):
@@ -53,8 +53,8 @@ def loss(x, y, w):
         (value-(w[1]*x[i]+w[0]))**2
         i=i+1
 
-def stochGradDes(x,y,alpha)
-    w = [0, 0]
+def stochGradDes(x,y,alpha):
+    w = [0.5, 0.5]
     w = np.array(w)
     q = 15
     while dSSE(x, y, w) > epsilon:
@@ -63,10 +63,21 @@ def stochGradDes(x,y,alpha)
     return w
 
 def dSSE(x, y, w):
+    w = np.matrix(w)
+    w = w.T
+    x = np.matrix(x)
     #w[0] = -2*np.sum(y - w*x)
     #w[1] = -2*np.sum(y - w*x)
-    loss_w = [-2*np.sum(y - w*x)]
-    return np.math.sqrt(loss_w[0] ** 2 + loss_w[1] ** 2)
+    print(np.shape(w))
+    print(w)
+    print(np.shape(x*w))
+    print(x*w)
+    print(np.matmul(x, w))
+    loss_w = [-2*np.sum(y - x*w)]
+    loss_w
+    print(np.shape(loss_w))
+
+    return np.math.sqrt(loss_w**2)
 
 batchGradDes(x1,y1,alpha) #English regression
 batchGradDes(x2,y2,alpha) #French regression
