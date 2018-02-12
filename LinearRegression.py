@@ -11,6 +11,9 @@ y1 = (y1 - np.min(y1))/(np.max(y1) - np.min(y1))
 x2 = (x2 - np.min(x2))/(np.max(x2) - np.min(x2))
 y2 = (y2 - np.min(y2))/(np.max(y2) - np.min(y2))
 
+alpha = 0.1
+epsilon = 0.1
+
 plt.figure(1)
 plt.plot(x1,y1,'ro', label='English')
 plt.xlabel('x')
@@ -28,16 +31,23 @@ plt.legend()
 plt.show()
 
 
+a = np.ones(np.size(x1))
+x1 = np.vstack([a,x1]).T
+x2 = np.vstack([a,x2]).T
+
+gradDes(x1,y1,alfa) #English regression
+gradDes(x2,y2,alfa) #French regression
+
+
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
 def batchGradDes(x, y, alpha):
     w = [0, 0]
     w = np.array(w)
-    q = 15
+    q = np.size(x)
     while(dSSE(x, y ,w) > epsilon):
-        w[0] = w[0] + (alpha/q)*sum(y - (w*x))
-        w[1] = w[1] + (alpha/q)*sum(y - (w*x))
+        w[0] = w[0] + (alpha/q)*sum(y - (x*w))
+        w[1] = w[1] + (alpha/q)*sum(y - (x*w))
     return w
-
 #For a data set ds and weight array w, find the squared loss
 def loss(x, y, w):
     i=0
