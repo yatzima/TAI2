@@ -19,3 +19,9 @@ plt.ylabel('y')
 plt.title('Interesting Graph\nCheck it out 2')
 plt.legend()
 plt.show()
+
+w_f = [0,0] #french
+w_e = [0,0] #english
+wf = np.array(w_f)
+we = np.array(w_e)
+
