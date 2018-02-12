@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 
 x1, y1 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
 x2, y2 = np.loadtxt('salammbo_a_fr', delimiter=',', unpack=True)
+alfa = 1
+epsilon = 0.1
 
 plt.figure(1)
 plt.plot(x1,y1,'ro', label='English')
@@ -20,12 +22,15 @@ plt.title('French')
 plt.legend()
 plt.show()
 
+gradDes(x1,y1,alfa) #English regression
+gradDes(x2,y2,alfa) #French regression
+
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
-def gradDes(ds, alfa):
-    w_f = [0,0] #french
-    w_e = [0,0] #english
-    wf = np.array(w_f)
-    we = np.array(w_e)
+def gradDes(x,y, alfa):
+    w_initial = [0,0]
+    w = np.array(w_initial)
+    while(loss(x,y,w)>eps):
+        #update w
 
 #For a data set ds and weight array w, find the squared loss
 def loss(x, y, w):
@@ -34,3 +39,4 @@ def loss(x, y, w):
         (value-(w[1]*x[i]+w[0]))**2
         i=i+1
 
+def stochGradDes(x,y,alfa)
