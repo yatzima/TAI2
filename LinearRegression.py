@@ -25,12 +25,18 @@ plt.title('French')
 plt.legend()
 plt.show()
 
+x1 =
+
+
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
-def batchGradDes(ds, alpha):
-    w_f = [0,0] #french
-    w_e = [0,0] #english
-    wf = np.array(w_f)
-    we = np.array(w_e)
+def batchGradDes(x, y, alpha):
+    w = [0, 0]
+    w = np.array(w)
+    q = 15
+    while(dSSE(x, y ,w) > 0.1):
+        w[0] = w[0] + (alpha/q)*sum(y - (w*x))
+        w[1] = w[1] + (alpha/q)*sum(y - (w*x))
+
 
 #For a data set ds and weight array w, find the squared loss
 def loss(x, y, w):
@@ -38,3 +44,8 @@ def loss(x, y, w):
     for value in y:
         (value-(w[1]*x[i]+w[0]))**2
         i=i+1
+
+def dSSE(x, y, w):
+    w[0] = -2*np.sum(y - w*x)
+    w[1] = -2*np.sum(y - w*x)
+    return w
