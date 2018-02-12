@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 x1, y1 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
 x2, y2 = np.loadtxt('salammbo_a_fr', delimiter=',', unpack=True)
 
+x1 = (x1 - np.min(x1))/(np.max(x1) - np.min(x1))
+y1 = (y1 - np.min(y1))/(np.max(y1) - np.min(y1))
+x2 = (x2 - np.min(x2))/(np.max(x2) - np.min(x2))
+y2 = (y2 - np.min(y2))/(np.max(y2) - np.min(y2))
+
 plt.figure(1)
 plt.plot(x1,y1,'ro', label='English')
 plt.xlabel('x')
@@ -21,7 +26,7 @@ plt.legend()
 plt.show()
 
 #For a data set ds, we find the minimum through a walk (iteration) down the surface.
-def gradDes(ds):
+def batchGradDes(ds):
     w_f = [0,0] #french
     w_e = [0,0] #english
     wf = np.array(w_f)
