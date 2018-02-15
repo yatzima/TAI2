@@ -14,7 +14,7 @@ def LIBSVMreader():
     #print(file.read())
     for line in file:
         words = line.split(':')
-        #print(words)
+        print(line)
     #print(words)
 
 # Scales the data to [0, 1]

@@ -13,7 +13,7 @@ x2 = (x2 - np.min(x2)) / (np.max(x2) - np.min(x2))
 y2 = (y2 - np.min(y2)) / (np.max(y2) - np.min(y2))
 
 # Constants
-alpha = 0.005
+alpha = 5
 epsilon = 0.01
 
 # Add column of ones to X array
@@ -21,19 +21,19 @@ a = np.ones(np.size(x1))
 x1 = np.vstack([a, x1]).T
 x2 = np.vstack([a, x2]).T
 y1 = np.vstack([y1]).T
-y2 = np.transpose(y2)
+y2 = np.vstack([y2]).T
 
 # For a matrices X and Y, find minimum through a walk (iteration) down the surface.
 def batchGradDes(x, y, alpha):
-    w = [0.5, 0.5]  # Initial guess
+    w = [0, 0.5]  # Initial guess
     w = np.array(w)
     q = np.shape(x)[0]  # nbr of rows; nbr of points
     loss = dSSE(x, y, w)
-    minLoss = loss
-    lossdiff = loss - minLoss + 2 * epsilon  # make sure we enter loop at least once
-    while lossdiff > epsilon:
-        if loss < minLoss:
-            minLoss = loss
+   # minLoss = loss
+    #lossdiff = loss - minLoss + 2 * epsilon  # make sure we enter loop at least once
+    while loss > epsilon:
+        #if loss < minLoss:
+         #   minLoss = loss
         # Update w
         sum1 = []
         sum1 = np.array(sum1)
@@ -47,8 +47,8 @@ def batchGradDes(x, y, alpha):
         w[0] = w[0] + (alpha / q) * sum(sum1)
         w[1] = w[1] + (alpha / q) * sum(sum2)
         loss = dSSE(x, y, w)
-        lossdiff = loss - minLoss
-        print(lossdiff)
+        #lossdiff = loss - minLoss
+        print(loss)
     return w
 
 
@@ -61,7 +61,7 @@ def loss(x, y, w):
 
 
 def stochGradDes(x, y, alpha):
-    w = [0.5, 0.5]
+    w = [0, 0.5]
     w = np.array(w)
     loss = dSSE(x, y, w)
     minLoss = loss
@@ -79,6 +79,7 @@ def stochGradDes(x, y, alpha):
     return w
 
 
+# Gradient of loss function
 def dSSE(x, y, w):
     w = np.matrix(w)
     w = w.T
@@ -115,6 +116,7 @@ y_e2 = w_e2[0] + w_e2[1] * xreg
 
 plt.figure(1)
 plt.plot(xreg, y_e1, label='English - batch')
+plt.plot((x1[:,1]), y1, 'ro')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('English')
@@ -123,6 +125,7 @@ plt.show()
 
 plt.figure(2)
 plt.plot(xreg, y_f1, label='French - batch')
+plt.plot((x2[:,1]), y2, 'ro')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('French')
@@ -131,6 +134,7 @@ plt.show()
 
 plt.figure(3)
 plt.plot(xreg, y_e2, label='English - stochastic')
+plt.plot((x1[:,1]), y1, 'ro')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('English')
@@ -139,6 +143,7 @@ plt.show()
 
 plt.figure(4)
 plt.plot(xreg, y_f2, label='French - stochastic')
+plt.plot((x2[:,1]), y2, 'ro')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('French')
