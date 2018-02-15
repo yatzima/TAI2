@@ -30,11 +30,11 @@ def LIBSVMreader():
 
 
 # Define the activation function (heaviside)
-def hw1(x,w) : return np.heaviside(w*x, 0)
+def hw1(x,w): return np.heaviside(w*x, 0)
 
 
 # Define the activation function (logistic/sigmoidal)
-def hw2(x, w) : return 1 / (1 + np.exp(-(w*x)))
+def hw2(x, w): return 1 / (1 + np.exp(-(w*x)))
 
 
 # Define the Perceptron Learning Rule
@@ -51,6 +51,12 @@ def perceptron(x, y):
     updateWeight(x, y, w)
     y = hw1(x, w)
     return y
+
+
+def updadeWeight2(x, y, w):
+    for i in range(len(w)):
+        w[i] = w[i] + alpha*(y[i] - hw2(x[i], w[i])) * hw2(x[i], w[i])*(1 - hw2(x[i], w[i])) * x[i]
+    return w
 
 
 LIBSVMreader()
