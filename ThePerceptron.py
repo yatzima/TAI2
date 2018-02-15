@@ -1,6 +1,6 @@
 import numpy as np
-from sklearn import *
-from svmutil import *
+#from sklearn import *
+#from svmutil import *
 
 x1, y1 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
 x2, y2 = np.loadtxt('salammbo_a_fr', delimiter=',', unpack=True)
@@ -40,6 +40,3 @@ def perceptron(x, y, w):
     return 1
 
 LIBSVMreader()
-svm_read_problem('salammbo_a')
-print(prob_y)
-print(prob_x)
