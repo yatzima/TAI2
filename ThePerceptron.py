@@ -15,15 +15,33 @@ b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
 
 alpha = 0.1
 
-# Write a reader function for the LIBSVM format and scale the data in your set. You can write a simplified
-# reader that assumes that all the attributes, including zeros, will have an index, i.e. ignore the sparse format.
-def LIBSVMreader():
-    file = open('salammbo_a', 'r')
+# Reader function for the LIBSVM format. The
+# reader assumes all the attributes, including zeros, will have an index, i.e. ignores the sparse format.
+def LIBSVMreader(fileName):
+    file = open(fileName, 'r')
+    y = []
+    x = []
+    y = np.array(y)
+    x = np.array(x)
+    i = 0
     #print(file.read())
     for line in file:
-        words = line.split(':')
-        print(line)
-    #print(words)
+        words = line.split() # vector containing three elements: one classification and two feature values
+        y = np.append(y, words[0]) # add classification
+        j = 1
+        features = []
+        features = np.array(features)
+        while j < np.size(words):
+            value = words[j].split(':')[1]
+            value = float(value)
+            features = np.append(features, value)
+            j = j + 1
+        if i==0:
+            x = features
+        else:
+            x = np.vstack([x, features])
+        i = i+1
+    file.close()
 
 # Write the perceptron program as explained in pages 723--725 in Russell-Norvig
 # and in the slides and run it on your data set.
@@ -59,7 +77,7 @@ def updadeWeight2(x, y, w):
     return w
 
 
-LIBSVMreader()
+LIBSVMreader('salammbo_a')
 plt.figure(1)
 plt.plot(a1, a2,'ro', label='Data points for English')
 plt.plot(b2, b2,'bo', label='Data points for French')
