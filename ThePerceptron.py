@@ -42,6 +42,7 @@ def LIBSVMreader(fileName):
             x = np.vstack([x, features])
         i = i+1
     file.close()
+    return x, y
 
 # Write the perceptron program as explained in pages 723--725 in Russell-Norvig
 # and in the slides and run it on your data set.
@@ -77,7 +78,7 @@ def updadeWeight2(x, y, w):
     return w
 
 
-LIBSVMreader('salammbo_a')
+x, y = LIBSVMreader('salammbo_a')
 plt.figure(1)
 plt.plot(a1, a2,'ro', label='Data points for English')
 plt.plot(b2, b2,'bo', label='Data points for French')
