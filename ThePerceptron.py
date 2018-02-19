@@ -103,10 +103,10 @@ x, y = LIBSVMreader('salammbo_a_copy.txt')
 dummy = np.ones(len(x[:,0]))
 x = np.concatenate([np.matrix(dummy), x.T])
 x = np.transpose(x)
-print(np.shape(x))
 
 y_hat = perceptron(x, y)  # Run the perceptron
 
+print("Missclassifications: %d" %loss(y_hat, y))
 plt.figure(1)
 plt.plot(a1, a2,'ro', label='Data points for English')
 plt.plot(b2, b2,'bo', label='Data points for French')
