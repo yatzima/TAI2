@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import time
 #from sklearn import *
 #from svmutil import *
 
@@ -15,6 +16,7 @@ b1 = (b1 - np.min(b1)) / (np.max(b1) - np.min(b1))
 b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
 
 alpha = 0.1
+
 
 # Reader function for the LIBSVM format. The
 # reader assumes all the attributes, including zeros,
@@ -44,7 +46,8 @@ def LIBSVMreader(fileName):
             x = np.vstack([x, features])
         i = i+1
     file.close()
-    x = (x - np.min(x)) / (np.max(x) - np.min(x))
+    for i in range(len(x[0, :])):
+        x[:, i] = (x[:, i] - np.min(x[:, i])) / (np.max(x[:, i]) - np.min(x[:, i]))
     return x, y
 
 
@@ -53,33 +56,55 @@ def LIBSVMreader(fileName):
 def logistic(x, w):
     return 1 / (1 + np.exp(-(np.dot(w, x.T))))
 
+
 # Define heaviside
 def hw(x):
     return 1 * (x > 0.5)
 
 
-# Gradient ascent
-def updateWeight(x_i, y_i, w):
-    #For nbrOfWeights
-    for i in range(len(w)):
-        w[i] = w[i]+alpha*x_i[0, i]*(y_i - logistic(x_i, w))
-    return w
-
-
 # Define the perceptron with logistic activation function
 def logRegression(x, y):
-    w = np.ones(np.size(x[0, :])) * 0.1  # initialize w
+    w = np.ones(np.size(x[0, :])) * 0.01  # initialize w
+    #w = [-0.0007755, -0.08305528, 0.08987936]
+    # w = [-0.00079216, -0.08511596,  0.09141474]
+
     y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
+    plt.figure(1)
+    yreg =  -(w[0] + w[1] * x[:, 1])/w[2]
+    plt.plot(a1, a2, 'ro', label='Data points for English')
+    plt.plot(b2, b2, 'bo', label='Data points for French')
+    plt.plot(x[:, 1], yreg, label='Line')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('English and french')
+    plt.legend()
+    plt.show()
+    time.sleep(0.1)
     while missclassific > 2:           # while nbr of missclassified objects are big
-        i = random.randint(0, len(y)-1)         # pick random object
-        w = updateWeight2(x[i, :], y[i], w)      # update weights based on object i
-        y_hat = hw(logistic(x, w))                # classify all sample points x by using h(w) to get y_hat
-        missclassific = loss(y_hat, y)        # calculate loss (y_hat - y)
+        x_shuffle = [[i] for i in range(len(x))]
+        random.shuffle(x_shuffle)
+        for ind in range(len(x_shuffle)):
+            w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w)
+            y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
+            missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
+            plt.figure(1)
+            yreg = (-w[0]-w[1]*x[:, 1])/w[2]
+            plt.plot(a1, a2, 'ro', label='Data points for English')
+            plt.plot(b2, b2, 'bo', label='Data points for French')
+            plt.plot(x[:, 1], yreg, label='Line')
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.title('English and french')
+            plt.legend()
+            plt.show()
+            time.sleep(0.1)
+            if missclassific > 2:
+                break
     return y_hat
 
 
-def updateWeight2(x, y, w):
+def updateWeight(x, y, w):
     for i in range(len(w)):
         w[i] = w[i] + alpha * (y - logistic(x[0, i], w[i])) * logistic(x[0, i], w[i]) * (1 - logistic(x[0, i], w[i])) * x[0, i]
     print(w)

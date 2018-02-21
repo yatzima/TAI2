@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import time
 #from sklearn import *
 #from svmutil import *
 
@@ -13,8 +14,6 @@ a1 = (a1 - np.min(a1)) / (np.max(a1) - np.min(a1))
 a2 = (a2 - np.min(a2)) / (np.max(a2) - np.min(a2))
 b1 = (b1 - np.min(b1)) / (np.max(b1) - np.min(b1))
 b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
-
-alpha = 0.1
 
 # Reader function for the LIBSVM format. The
 # reader assumes all the attributes, including zeros,
@@ -44,6 +43,8 @@ def LIBSVMreader(fileName):
             x = np.vstack([x, features])
         i = i+1
     file.close()
+    for i in range(len(x[0, :])):
+        x[:, i] = (x[:, i] - np.min(x[:, i])) / (np.max(x[:, i]) - np.min(x[:, i]))
     return x, y
 
 
@@ -56,6 +57,9 @@ def hw1(x, w):
 # Define the activation function (logistic/sigmoidal)
 def hw2(x, w):
     return 1 / (1 + np.exp(-(w*x)))
+
+def alpha(t):
+    return 1000/(1000+t)
 
 
 # Define the Perceptron Learning Rule
@@ -76,12 +80,32 @@ def perceptron(x, y):
     w = np.ones(np.size(x[0, :])) * 0.1  # initialize w
     y_hat = hw1(x, w)
     missclassific = loss(y_hat, y)
-    best = missclassific
+    counter = 1
     while missclassific > 0.1*len(y):           # while nbr of missclassified objects are big
-        i = random.randint(0, len(y)-1)         # pick random object
-        w = updateWeight(x[i, :], y[i], w)      # update weights based on object i
-        y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
-        missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
+        x_shuffle = [[i] for i in range(len(x))]
+        random.shuffle(x_shuffle)
+        alpha = alpha(counter)
+        counter = counter + 1
+        for ind in range(len(x_shuffle)):
+            w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w)
+            y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
+            missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
+
+            # plt.figure(1)
+            # plt.plot(a1, a2, 'ro', label='Data points for English')
+            # plt.plot(b2, b2, 'bo', label='Data points for French')
+            # plt.xlabel('x')
+            # plt.ylabel('y')
+            # plt.title('English and french')
+            # plt.legend()
+            # yreg = (-w[0] - w[1] * x[:, 1]) / w[2]
+            # plt.plot(x[:, 1], yreg, label='Line')
+            # plt.show()
+            # time.sleep(0.1)
+            if missclassific > 0.1*len(y):
+                break
+    # i = random.randint(0, len(y)-1)         # pick random object
+    # w = updateWeight(x[i, :], y[i], w)      # update weights based on object i
     return y_hat
 
 
@@ -104,6 +128,7 @@ dummy = np.ones(len(x[:,0]))
 x = np.concatenate([np.matrix(dummy), x.T])
 x = np.transpose(x)
 
+alpha = alpha(1)
 y_hat = perceptron(x, y)  # Run the perceptron
 
 print("Missclassifications: %d" %loss(y_hat, y))
