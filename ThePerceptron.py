@@ -5,7 +5,6 @@ import time
 #from sklearn import *
 #from svmutil import *
 
-
 a1, a2 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
 b1, b2 = np.loadtxt('salammbo_a_fr', delimiter=',', unpack=True)
 
@@ -47,6 +46,12 @@ def LIBSVMreader(fileName):
         x[:, i] = (x[:, i] - np.min(x[:, i])) / (np.max(x[:, i]) - np.min(x[:, i]))
     return x, y
 
+def scale(x):
+    x_scaled = np.copy(x)
+    for i in range(np.shape(x)[1]):
+        x_scaled[:, i] = (x[:,i] - np.min(x[:,i])) / (np.max(x[:,i]) - np.min(x[:,i]))
+    return x_scaled
+
 
 # Define the activation function (heaviside)
 # Returns classifications for all objects
@@ -54,16 +59,12 @@ def hw1(x, w):
     return np.heaviside(np.dot(w, x.T), 0)
 
 
-# Define the activation function (logistic/sigmoidal)
 def hw2(x, w):
     return 1 / (1 + np.exp(-(w*x)))
 
-def alpha(t):
-    return 1000/(1000+t)
-
 
 # Define the Perceptron Learning Rule
-def updateWeight(x_i, y_i, w):
+def updateWeight(x_i, y_i, w, alpha):
     #For nbrOfWeights
     for i in range(len(w)):
         w[i] = w[i] + alpha*(y_i - hw1(x_i, w)[0,0])*x_i[0, i]
@@ -72,47 +73,46 @@ def updateWeight(x_i, y_i, w):
 
 # Define the perceptron
 def perceptron(x, y):
-    # w = np.ones(len(x), 1)*0.1  # initialize w
-    # updateWeight(x, y, w)
-    # y = hw1(x, w)
-    # return y
-
     w = np.ones(np.size(x[0, :])) * 0.1  # initialize w
     y_hat = hw1(x, w)
     missclassific = loss(y_hat, y)
-    counter = 1
-    while missclassific > 0.1*len(y):           # while nbr of missclassified objects are big
-        x_shuffle = [[i] for i in range(len(x))]
-        random.shuffle(x_shuffle)
-        alpha = alpha(counter)
-        counter = counter + 1
-        for ind in range(len(x_shuffle)):
-            w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w)
-            y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
-            missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
 
-            # plt.figure(1)
-            # plt.plot(a1, a2, 'ro', label='Data points for English')
-            # plt.plot(b2, b2, 'bo', label='Data points for French')
-            # plt.xlabel('x')
-            # plt.ylabel('y')
-            # plt.title('English and french')
-            # plt.legend()
-            # yreg = (-w[0] - w[1] * x[:, 1]) / w[2]
-            # plt.plot(x[:, 1], yreg, label='Line')
-            # plt.show()
-            # time.sleep(0.1)
-            if missclassific > 0.1*len(y):
-                break
-    # i = random.randint(0, len(y)-1)         # pick random object
-    # w = updateWeight(x[i, :], y[i], w)      # update weights based on object i
-    return y_hat
+    # while missclassific > 0.1*len(y):           # while nbr of missclassified objects are big
+    #     x_shuffle = [[i] for i in range(len(x))]
+    #     random.shuffle(x_shuffle)
+    #     for ind in range(len(x_shuffle)):
+    #         w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
+    #         y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
+    #         missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
+    #
+    #         # plt.figure(1)
+    #         # plt.plot(a1, a2, 'ro', label='Data points for English')
+    #         # plt.plot(b2, b2, 'bo', label='Data points for French')
+    #         # plt.xlabel('x')
+    #         # plt.ylabel('y')
+    #         # plt.title('English and french')
+    #         # plt.legend()
+    #         # yreg = (-w[0] - w[1] * x[:, 1]) / w[2]
+    #         # plt.plot(x[:, 1], yreg, label='Line')
+    #         # plt.show()
+    #         # time.sleep(0.1)
+    #         if missclassific > 0.1*len(y):
+    #             break
+    # # i = random.randint(0, len(y)-1)         # pick random object
+    # # w = updateWeight(x[i, :], y[i], w)      # update weights based on object i
+    # return y_hat
 
+    t=0
+    alpha = 1000 / (1000 + t)
+    while missclassific > 0:           # while nbr of missclassified objects are big
+        i = random.randint(0, len(y)-1)         # pick random object
+        w = updateWeight(x[i, :], y[i], w, alpha)      # update weights based on object i
+        y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
+        missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
+        alpha = 1000/(1000+t)
+        t = t+1
+    return y_hat, w
 
-def updadeWeight2(x, y, w):
-    for i in range(len(w)):
-        w[i] = w[i] + alpha*(y[i] - hw2(x[i], w[i])) * hw2(x[i], w[i])*(1 - hw2(x[i], w[i])) * x[i]
-    return w
 
 # Returns the number of missclassified examples using weights w
 def loss(y_hat, y):
@@ -124,43 +124,44 @@ def loss(y_hat, y):
 
 
 x, y = LIBSVMreader('salammbo_a_copy.txt')
+x_scaled = scale(x)
 dummy = np.ones(len(x[:,0]))
-x = np.concatenate([np.matrix(dummy), x.T])
-x = np.transpose(x)
+x_scaled = np.concatenate([np.matrix(dummy), x_scaled.T])
+x_scaled = np.transpose(x_scaled)
 
-alpha = alpha(1)
-y_hat = perceptron(x, y)  # Run the perceptron
+
+#y_hat = perceptron(x, y)  # Run the perceptron
+y_hat, w_hat = perceptron(x_scaled, y)  # Run the perceptron
+
 
 print("Missclassifications: %d" %loss(y_hat, y))
-plt.figure(1)
-plt.plot(a1, a2,'ro', label='Data points for English')
-plt.plot(b2, b2,'bo', label='Data points for French')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('English and french')
-plt.legend()
-plt.show()
-
+plt.close("all")
 plt.figure(1)
 redlabel_added = False
 bluelabel_added = False
 for i in range(len(x[:,0])):
-    if y_hat[0, i] == 0:
-        if redlabel_added:
-            plt.plot(x[i, 1], x[i,2],'r+')
+    if y[i] == 0:
+        if redlabel_added & (y_hat[0,i] == y[i]):
+            plt.plot(x_scaled[i, 1], x_scaled[i,2],'r+')
+        elif redlabel_added:
+            plt.plot(x_scaled[i, 1], x_scaled[i, 2], 'ro', label ='Missclassified as 1')
         else:
-            plt.plot(x[i, 1], x[i, 2], 'r+', label='Class 0')
+            plt.plot(x_scaled[i, 1], x_scaled[i, 2], 'r+', label='Class 0')
             redlabel_added = True
-    elif y_hat[0, i] == 1:
-        if bluelabel_added:
-            plt.plot(x[i, 1], x[i,2],'b+')
+    elif y[i] == 1:
+        if bluelabel_added & (y_hat[0,i] == y[i]):
+            plt.plot(x_scaled[i, 1], x_scaled[i,2],'b+')
+        elif bluelabel_added:
+            plt.plot(x_scaled[i, 1], x_scaled[i, 2], 'bo', label ='Missclassified as 0')
         else:
-            plt.plot(x[i, 1], x[i, 2], 'b+', label='Class 1')
+            plt.plot(x_scaled[i, 1], x_scaled[i, 2], 'b+', label='Class 1')
             bluelabel_added = True
     else:
-        plt.plot(x[i, 1], x[i, 2], 'g*', label='Unclassified')
-plt.xlabel('x')
-plt.ylabel('y')
+        plt.plot(x_scaled[i, 1], x_scaled[i, 2], 'g*', label='Unclassified')
+yreg =-(w_hat[0] + w_hat[1] * x_scaled[:,1]) / w_hat[2]
+plt.plot(x_scaled[:,1], yreg, label='Separation Line')
+plt.xlabel('x1')
+plt.ylabel('x2')
 plt.title('English and french')
 plt.legend()
 plt.show()
