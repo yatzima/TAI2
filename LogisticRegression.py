@@ -44,40 +44,47 @@ def LIBSVMreader(fileName):
             x = np.vstack([x, features])
         i = i+1
     file.close()
+    x = (x - np.min(x)) / (np.max(x) - np.min(x))
     return x, y
+
 
 # Define the activation function (logistic/sigmoidal)
 #  Returns classifications for all objects
 def logistic(x, w):
-    return 1 / (1 + np.exp(-(w*x)))
+    return 1 / (1 + np.exp(-(np.dot(w, x.T))))
+
+# Define heaviside
+def hw(x):
+    return 1 * (x > 0.5)
 
 
 # Gradient ascent
 def updateWeight(x_i, y_i, w):
     #For nbrOfWeights
     for i in range(len(w)):
-        w[i] = w[i]+alpha*x_i[0,i]*(y_i - logistic(x_i, w))
+        w[i] = w[i]+alpha*x_i[0, i]*(y_i - logistic(x_i, w))
     return w
 
 
-# Define the perceptron
+# Define the perceptron with logistic activation function
 def logRegression(x, y):
     w = np.ones(np.size(x[0, :])) * 0.1  # initialize w
-    y_hat = logistic(x, w)
+    y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
-    best = missclassific
-    while missclassific > 0.1*len(y):           # while nbr of missclassified objects are big
+    while missclassific > 2:           # while nbr of missclassified objects are big
         i = random.randint(0, len(y)-1)         # pick random object
-        w = updateWeight(x[i, :], y[i], w)      # update weights based on object i
-        y_hat = logistic(x, w)                  # classify all sample points x by using h(w) to get y_hat
-        missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
+        w = updateWeight2(x[i, :], y[i], w)      # update weights based on object i
+        y_hat = hw(logistic(x, w))                # classify all sample points x by using h(w) to get y_hat
+        missclassific = loss(y_hat, y)        # calculate loss (y_hat - y)
     return y_hat
 
 
-def updadeWeight2(x, y, w):
+def updateWeight2(x, y, w):
     for i in range(len(w)):
-        w[i] = w[i] + alpha*(y[i] - hw2(x[i], w[i])) * hw2(x[i], w[i])*(1 - hw2(x[i], w[i])) * x[i]
+        w[i] = w[i] + alpha * (y - logistic(x[0, i], w[i])) * logistic(x[0, i], w[i]) * (1 - logistic(x[0, i], w[i])) * x[0, i]
+    print(w)
     return w
+
 
 # Returns the number of missclassified examples using weights w
 def loss(y_hat, y):
@@ -93,12 +100,12 @@ dummy = np.ones(len(x[:,0]))
 x = np.concatenate([np.matrix(dummy), x.T])
 x = np.transpose(x)
 
-y_hat = perceptron(x, y)  # Run the perceptron
+y_hat = logRegression(x, y)  # Run the perceptron
 
 print("Missclassifications: %d" %loss(y_hat, y))
 plt.figure(1)
-plt.plot(a1, a2,'ro', label='Data points for English')
-plt.plot(b2, b2,'bo', label='Data points for French')
+plt.plot(a1, a2, 'ro', label='Data points for English')
+plt.plot(b2, b2, 'bo', label='Data points for French')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('English and french')
@@ -108,7 +115,7 @@ plt.show()
 plt.figure(1)
 redlabel_added = False
 bluelabel_added = False
-for i in range(len(x[:,0])):
+for i in range(len(x[:, 0])):
     if y_hat[0, i] == 0:
         if redlabel_added:
             plt.plot(x[i, 1], x[i,2],'r+')
