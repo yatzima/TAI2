@@ -14,6 +14,7 @@ a2 = (a2 - np.min(a2)) / (np.max(a2) - np.min(a2))
 b1 = (b1 - np.min(b1)) / (np.max(b1) - np.min(b1))
 b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
 
+
 # Reader function for the LIBSVM format. The
 # reader assumes all the attributes, including zeros,
 # will have an index, i.e. ignores the sparse format.
@@ -46,6 +47,7 @@ def LIBSVMreader(fileName):
         x[:, i] = (x[:, i] - np.min(x[:, i])) / (np.max(x[:, i]) - np.min(x[:, i]))
     return x, y
 
+
 def scale(x):
     x_scaled = np.copy(x)
     for i in range(np.shape(x)[1]):
@@ -55,59 +57,30 @@ def scale(x):
 
 # Define the activation function (heaviside)
 # Returns classifications for all objects
-def hw1(x, w):
+def hw(x, w):
     return np.heaviside(np.dot(w, x.T), 0)
-
-
-def hw2(x, w):
-    return 1 / (1 + np.exp(-(w*x)))
 
 
 # Define the Perceptron Learning Rule
 def updateWeight(x_i, y_i, w, alpha):
     #For nbrOfWeights
     for i in range(len(w)):
-        w[i] = w[i] + alpha*(y_i - hw1(x_i, w)[0,0])*x_i[0, i]
+        w[i] = w[i] + alpha*(y_i - hw(x_i, w)[0, 0])*x_i[0, i]
     return w
 
 
-# Define the perceptron
+# Define the perceptron with batch upgrade
 def perceptron(x, y):
     w = np.ones(np.size(x[0, :])) * 0.1  # initialize w
-    y_hat = hw1(x, w)
+    y_hat = hw(x, w)
     missclassific = loss(y_hat, y)
+    t = 0
 
-    # while missclassific > 0.1*len(y):           # while nbr of missclassified objects are big
-    #     x_shuffle = [[i] for i in range(len(x))]
-    #     random.shuffle(x_shuffle)
-    #     for ind in range(len(x_shuffle)):
-    #         w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
-    #         y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
-    #         missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
-    #
-    #         # plt.figure(1)
-    #         # plt.plot(a1, a2, 'ro', label='Data points for English')
-    #         # plt.plot(b2, b2, 'bo', label='Data points for French')
-    #         # plt.xlabel('x')
-    #         # plt.ylabel('y')
-    #         # plt.title('English and french')
-    #         # plt.legend()
-    #         # yreg = (-w[0] - w[1] * x[:, 1]) / w[2]
-    #         # plt.plot(x[:, 1], yreg, label='Line')
-    #         # plt.show()
-    #         # time.sleep(0.1)
-    #         if missclassific > 0.1*len(y):
-    #             break
-    # # i = random.randint(0, len(y)-1)         # pick random object
-    # # w = updateWeight(x[i, :], y[i], w)      # update weights based on object i
-    # return y_hat
-
-    t=0
     alpha = 1000 / (1000 + t)
     while missclassific > 0:           # while nbr of missclassified objects are big
         i = random.randint(0, len(y)-1)         # pick random object
         w = updateWeight(x[i, :], y[i], w, alpha)      # update weights based on object i
-        y_hat = hw1(x, w)                       # classify all sample points x by using h(w) to get y_hat
+        y_hat = hw(x, w)                       # classify all sample points x by using h(w) to get y_hat
         missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
         alpha = 1000/(1000+t)
         t = t+1
@@ -130,7 +103,6 @@ x_scaled = np.concatenate([np.matrix(dummy), x_scaled.T])
 x_scaled = np.transpose(x_scaled)
 
 
-#y_hat = perceptron(x, y)  # Run the perceptron
 y_hat, w_hat = perceptron(x_scaled, y)  # Run the perceptron
 
 

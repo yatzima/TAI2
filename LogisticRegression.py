@@ -62,53 +62,66 @@ def hw(x):
     return 1 * (x > 0.5)
 
 
-# Define the perceptron with logistic activation function
-def logRegression(x, y):
-    w = np.ones(np.size(x[0, :])) * 0.01  # initialize w
-    #w = [-0.0007755, -0.08305528, 0.08987936]
+def updateWeight(x, y, w, alpha):
+    for i in range(len(w)):
+        w[i] = w[i] + alpha * (y - logistic(x[0, i], w[i])) * logistic(x[0, i], w[i]) * (1 - logistic(x[0, i], w[i])) * x[0, i]
+    return w
+
+
+# Define the perceptron with logistic activation function and batch upgrade
+def batchLogRegression(x, y):
+    w = np.ones(np.size(x[0, :])) * 0.001 # initialize w
+    t = 0
+    y_hat = hw(logistic(x, w))
+    missclassific = loss(y_hat, y)
+
+    while missclassific > 2:
+        for i in range(len(x[:, 0])):
+            alpha = 1000 / (1000 + t)
+            t = t + 1
+            w = updateWeight(x[i, :], y[i], w, alpha)
+        y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
+        missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
+    return y_hat, w
+
+
+# Define the perceptron with logistic activation function and stoch upgrade
+def stochLogRegression(x, y):
+    w = np.ones(np.size(x[0, :])) * 0.001  # initialize w
+    t = 0
+    # w = [-0.0007755, -0.08305528, 0.08987936]
     # w = [-0.00079216, -0.08511596,  0.09141474]
 
     y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
-    plt.figure(1)
-    yreg =  -(w[0] + w[1] * x[:, 1])/w[2]
-    plt.plot(a1, a2, 'ro', label='Data points for English')
-    plt.plot(b2, b2, 'bo', label='Data points for French')
-    plt.plot(x[:, 1], yreg, label='Line')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title('English and french')
-    plt.legend()
-    plt.show()
-    time.sleep(0.1)
+
     while missclassific > 2:           # while nbr of missclassified objects are big
         x_shuffle = [[i] for i in range(len(x))]
         random.shuffle(x_shuffle)
         for ind in range(len(x_shuffle)):
-            w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w)
+            alpha = 1000 / (1000 + t)
+            w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
             y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
             missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
-            plt.figure(1)
-            yreg = (-w[0]-w[1]*x[:, 1])/w[2]
-            plt.plot(a1, a2, 'ro', label='Data points for English')
-            plt.plot(b2, b2, 'bo', label='Data points for French')
-            plt.plot(x[:, 1], yreg, label='Line')
-            plt.xlabel('x')
-            plt.ylabel('y')
-            plt.title('English and french')
-            plt.legend()
-            plt.show()
-            time.sleep(0.1)
+            t = t + 1
+
+            print(w)
+
+            # plt.figure(1)
+            # yreg = (-w[0]-w[1]*x[:, 1])/w[2]
+            # plt.plot(a1, a2, 'ro', label='Data points for English')
+            # plt.plot(b2, b2, 'bo', label='Data points for French')
+            # plt.plot(x[:, 1], yreg, label='Line')
+            # plt.xlabel('x')
+            # plt.ylabel('y')
+            # plt.title('English and french')
+            # plt.legend()
+            # plt.show()
+            # time.sleep(0.1)
+
             if missclassific > 2:
                 break
-    return y_hat
-
-
-def updateWeight(x, y, w):
-    for i in range(len(w)):
-        w[i] = w[i] + alpha * (y - logistic(x[0, i], w[i])) * logistic(x[0, i], w[i]) * (1 - logistic(x[0, i], w[i])) * x[0, i]
-    print(w)
-    return w
+    return y_hat, w
 
 
 # Returns the number of missclassified examples using weights w
@@ -125,19 +138,22 @@ dummy = np.ones(len(x[:,0]))
 x = np.concatenate([np.matrix(dummy), x.T])
 x = np.transpose(x)
 
-y_hat = logRegression(x, y)  # Run the perceptron
+y_hat, w = stochLogRegression(x, y)  # Run the perceptron
 
 print("Missclassifications: %d" %loss(y_hat, y))
 plt.figure(1)
+yreg = (-w[0]-w[1]*x[:, 1])/w[2]
 plt.plot(a1, a2, 'ro', label='Data points for English')
 plt.plot(b2, b2, 'bo', label='Data points for French')
+plt.plot(x[:, 1], yreg, label='Line')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('English and french')
 plt.legend()
 plt.show()
 
-plt.figure(1)
+
+plt.figure(2)
 redlabel_added = False
 bluelabel_added = False
 for i in range(len(x[:, 0])):

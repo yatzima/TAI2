@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+
 # For matrices X and Y, find minimum through a walk (iteration) down the surface.
 def batchGradDes(x, y, alpha):
     w = [0, 0.5]  # Initial guess
@@ -23,12 +24,14 @@ def batchGradDes(x, y, alpha):
         grad = dSSE(x, y, w)
     return w
 
+
 # For a data set ds and weight array w, find the squared loss
 def SSE(x, y, w):
     sum = 0
     for i in range(len(y)):
-         sum= sum +(y[i] - (w[1] * x[i] + w[0])) ** 2
+        sum= sum +(y[i] - (w[1] * x[i] + w[0])) ** 2
     return sum
+
 
 # For matrices X and Y, find minimum through a walk (iteration) down the surface.
 def stochGradDes(x, y, alpha):
