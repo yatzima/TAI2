@@ -77,8 +77,8 @@ x2_scaled = (x2 - np.min(x2)) / (np.max(x2) - np.min(x2))
 y2_scaled = (y2 - np.min(y2)) / (np.max(y2) - np.min(y2))
 
 # Constants
-alpha = 0.005
-epsilon = 0.01
+alpha = 1
+epsilon = 0.001
 
 # Add column of ones to X array
 a = np.ones(np.size(x1_scaled))

@@ -52,9 +52,9 @@ def LIBSVMreader(fileName):
 
 
 # Define the activation function (logistic/sigmoidal)
-#  Returns classifications for all objects
 def logistic(x, w):
-    return 1 / (1 + np.exp(-(np.dot(w, x.T))))
+    val= 1 / (1 + np.exp(-(np.dot(w, x.T))))
+    return val
 
 
 # Define heaviside
@@ -64,7 +64,8 @@ def hw(x):
 
 def updateWeight(x, y, w, alpha):
     for i in range(len(w)):
-        w[i] = w[i] + alpha * (y - logistic(x[0, i], w[i])) * logistic(x[0, i], w[i]) * (1 - logistic(x[0, i], w[i])) * x[0, i]
+       # w[i] = w[i] + alpha * (y - logistic(x[:, i], w[i])) * logistic(x[:, i], w[i]) * (1 - logistic(x[:, i], w[i])) * x[0, i]
+        w[i] = w[i] + alpha * (y - logistic(x[0, :], w))* x[0, i]
     return w
 
 
@@ -95,7 +96,7 @@ def stochLogRegression(x, y):
     y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
 
-    while missclassific > 2:           # while nbr of missclassified objects are big
+    while missclassific > 0:           # while nbr of missclassified objects are big
         x_shuffle = [[i] for i in range(len(x))]
         random.shuffle(x_shuffle)
         for ind in range(len(x_shuffle)):
@@ -105,7 +106,7 @@ def stochLogRegression(x, y):
             missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
             t = t + 1
 
-            print(w)
+            print(missclassific)
 
             # plt.figure(1)
             # yreg = (-w[0]-w[1]*x[:, 1])/w[2]
@@ -119,7 +120,7 @@ def stochLogRegression(x, y):
             # plt.show()
             # time.sleep(0.1)
 
-            if missclassific > 2:
+            if missclassific < 0:
                 break
     return y_hat, w
 
