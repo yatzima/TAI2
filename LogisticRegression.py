@@ -15,8 +15,6 @@ a2 = (a2 - np.min(a2)) / (np.max(a2) - np.min(a2))
 b1 = (b1 - np.min(b1)) / (np.max(b1) - np.min(b1))
 b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
 
-alpha = 0.1
-
 
 # Reader function for the LIBSVM format. The
 # reader assumes all the attributes, including zeros,
@@ -76,7 +74,7 @@ def batchLogRegression(x, y):
     y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
 
-    while missclassific > 2:
+    while missclassific > 3:
         for i in range(len(x[:, 0])):
             alpha = 1000 / (1000 + t)
             t = t + 1
@@ -88,6 +86,7 @@ def batchLogRegression(x, y):
 
 # Define the perceptron with logistic activation function and stoch upgrade
 def stochLogRegression(x, y):
+    epsilon = 0.1
     w = np.ones(np.size(x[0, :])) * 0.001  # initialize w
     t = 0
     # w = [-0.0007755, -0.08305528, 0.08987936]
@@ -96,17 +95,19 @@ def stochLogRegression(x, y):
     y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
 
-    while missclassific > 0:           # while nbr of missclassified objects are big
+    while dLogLike(x, y, w) > epsilon:           # while nbr of missclassified objects are big
         x_shuffle = [[i] for i in range(len(x))]
         random.shuffle(x_shuffle)
         for ind in range(len(x_shuffle)):
-            alpha = 1000 / (1000 + t)
+            #alpha = 1000 / (1000 + t)
+            alpha = 0.5
             w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
             y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
             missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
             t = t + 1
 
-            print(missclassific)
+            #print(missclassific)
+            print(dLogLike(x, y, w))
 
             # plt.figure(1)
             # yreg = (-w[0]-w[1]*x[:, 1])/w[2]
@@ -120,7 +121,7 @@ def stochLogRegression(x, y):
             # plt.show()
             # time.sleep(0.1)
 
-            if missclassific < 0:
+            if dLogLike(x, y, w) > epsilon:
                 break
     return y_hat, w
 
@@ -132,6 +133,20 @@ def loss(y_hat, y):
         if (float(y[i]) - y_hat[0, i]) != 0:
             sum = sum+1
     return sum
+
+
+def dLogLike(x, y, w):
+    deltal = np.zeros(np.shape(x))
+    for j in range(len(y)):
+        for i in range(np.size(x[0, :])):
+            deltal[j, i] = x[j, i] * (y[j] - logistic(x[j, :], w))
+    deltal = deltal.sum(axis=1)
+    sum = 0
+    for i in range(len(deltal)):
+        sum = sum + deltal[i]**2
+    deltal = np.sqrt(sum)
+    print(deltal)
+    return deltal
 
 
 x, y = LIBSVMreader('salammbo_a_copy.txt')
