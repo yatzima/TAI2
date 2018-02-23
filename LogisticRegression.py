@@ -2,8 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import time
-#from sklearn import *
-#from svmutil import *
 
 
 a1, a2 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
@@ -14,8 +12,6 @@ a1 = (a1 - np.min(a1)) / (np.max(a1) - np.min(a1))
 a2 = (a2 - np.min(a2)) / (np.max(a2) - np.min(a2))
 b1 = (b1 - np.min(b1)) / (np.max(b1) - np.min(b1))
 b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
-
-alpha = 0.5
 
 
 # Reader function for the LIBSVM format. The
@@ -63,9 +59,10 @@ def hw(x):
 
 
 def updateWeight(x, y, w, alpha):
+    predict = logistic(x, w)
     for i in range(len(w)):
-       # w[i] = w[i] + alpha * (y - logistic(x[:, i], w[i])) * logistic(x[:, i], w[i]) * (1 - logistic(x[:, i], w[i])) * x[0, i]
-        w[i] = w[i] + alpha * (y - logistic(x[0, :], w))* x[0, i]
+        w[i] = w[i] + alpha * (y - predict) * predict * (1 - predict) * x[0, i]
+        # w[i] = w[i] + alpha * (y - logistic(x[0, :], w))* x[0, i]
     return w
 
 
@@ -93,7 +90,6 @@ def stochLogRegression(x, y):
     t = 0
 
     y_hat = hw(logistic(x, w))
-    missclassific = loss(y_hat, y)
 
     while dLogLike(x, y, w) > epsilon:           # while nbr of missclassified objects are big
         x_shuffle = [[i] for i in range(len(x))]
@@ -101,15 +97,11 @@ def stochLogRegression(x, y):
             alpha = 1000 / (1000 + t)
             w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
             y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
-            missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
             t = t + 1
-
-            print(missclassific)
-            print(dLogLike(x, y, w))
-            # time.sleep(0.1)
-
+            missclassific = loss(y_hat, y)
             if dLogLike(x, y, w) > epsilon:
                 break
+
     return y_hat, w
 
 
@@ -141,9 +133,10 @@ x = np.concatenate([np.matrix(dummy), x.T])
 x = np.transpose(x)
 
 y_hat, w = stochLogRegression(x, y)  # Run the regression
-
 print("Missclassifications: %d" %loss(y_hat, y))
+
 plt.figure(1)
+#w = [-0.0007755, -0.08305528, 0.08987936]
 yreg = (-w[0]-w[1]*x[:, 1])/w[2]
 plt.plot(a1, a2, 'ro', label='Data points for English')
 plt.plot(b2, b2, 'bo', label='Data points for French')
