@@ -85,7 +85,7 @@ def perceptron(x, y):
     t = 0
 
     alpha = 1000 / (1000 + t)
-    while missclassific > 3:           # while nbr of missclassified objects are big
+    while sumLoss(x, y, w) > 0.1:           # while nbr of missclassified objects are big
         i = random.randint(0, len(y)-1)         # pick random object
         w = updateWeight(x[i, :], y[i], w, alpha)      # update weights based on object i
         y_hat = hw(logistic(x.T, w))                       # classify all sample points x by using h(w) to get y_hat
@@ -103,6 +103,28 @@ def loss(y_hat, y):
         if (float(y[i]) - y_hat[0, i]) != 0:
             sum = sum+1
     return sum
+
+def sumLoss(x,y,w):
+    loss = np.zeros(np.shape(x))
+    for j in range(len(y)):
+        loss[:,j] = dLoss(x[j,:], y[j], w)
+    lossum = [sum(loss[:,0])**2, sum(loss[:,1])**2, sum(loss[:,2])**2]
+    sumtot = sum(lossum)
+    print(sumtot)
+    return np.sqrt(sumtot)
+
+
+def dLoss(x, y, w):
+    hwx = logistic(np.transpose(x), w)
+    dw = np.zeros(np.shape(w))
+    for i in range(np.size(x[0, :])):
+        dw[i] = -2*(y-hwx)*hwx*(1-hwx)*x[i]
+
+    sum = 0
+    for i in range(len(dW)):
+        sum = dw[i]**2
+    sum = np.sqrt(sum)
+    return dw
 
 
 x, y = LIBSVMreader('salammbo_a_copy.txt')
