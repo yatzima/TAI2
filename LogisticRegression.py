@@ -139,7 +139,7 @@ dummy = np.ones(len(x[:,0]))
 x = np.concatenate([np.matrix(dummy), x.T])
 x = np.transpose(x)
 
-y_hat, w = stochLogRegression(x, y)  # Run the perceptron
+y_hat, w = stochLogRegression(x, y)  # Run the regression
 
 print("Missclassifications: %d" %loss(y_hat, y))
 plt.figure(1)
