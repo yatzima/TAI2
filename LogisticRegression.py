@@ -88,21 +88,17 @@ def stochLogRegression(x, y):
     epsilon = 0.1
     w = np.ones(np.size(x[0, :])) * 0.001  # initialize w
     t = 0
-    # w = [-0.0007755, -0.08305528, 0.08987936]
-    # w = [-0.00079216, -0.08511596,  0.09141474]
 
     y_hat = hw(logistic(x, w))
 
     while dLogLike(x, y, w) > epsilon:           # while nbr of missclassified objects are big
         x_shuffle = [[i] for i in range(len(x))]
-        random.shuffle(x_shuffle)
         for ind in range(len(x_shuffle)):
             alpha = 1000 / (1000 + t)
             w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
             y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
             t = t + 1
             missclassific = loss(y_hat, y)
-            print(w)
             if dLogLike(x, y, w) > epsilon:
                 break
 
@@ -124,12 +120,10 @@ def dLogLike(x, y, w):
         for i in range(np.size(x[0, :])):
             deltal[j, i] = x[j, i] * (y[j] - logistic(x[j, :], w))
     deltal = deltal.sum(axis=0)
-
     sum = 0
     for i in range(len(deltal)):
         sum = sum + deltal[i]**2
     deltal = np.sqrt(sum)
-    # print(deltal)
     return deltal
 
 
