@@ -91,37 +91,21 @@ def stochLogRegression(x, y):
     epsilon = 0.1
     w = np.ones(np.size(x[0, :])) * 0.001  # initialize w
     t = 0
-    # w = [-0.0007755, -0.08305528, 0.08987936]
-    # w = [-0.00079216, -0.08511596,  0.09141474]
 
     y_hat = hw(logistic(x, w))
     missclassific = loss(y_hat, y)
 
     while dLogLike(x, y, w) > epsilon:           # while nbr of missclassified objects are big
         x_shuffle = [[i] for i in range(len(x))]
-        random.shuffle(x_shuffle)
         for ind in range(len(x_shuffle)):
-            #alpha = 1000 / (1000 + t)
-            alpha = 0.5
+            alpha = 1000 / (1000 + t)
             w = updateWeight(x[x_shuffle[ind], :], y[x_shuffle[ind]], w, alpha)
             y_hat = hw(logistic(x, w))  # classify all sample points x by using h(w) to get y_hat
             missclassific = loss(y_hat, y)  # calculate loss (y_hat - y)
             t = t + 1
 
-            #print(missclassific)
+            print(missclassific)
             print(dLogLike(x, y, w))
-
-            #if missclassific < 0:
-            # plt.figure(1)
-            # yreg = (-w[0]-w[1]*x[:, 1])/w[2]
-            # plt.plot(a1, a2, 'ro', label='Data points for English')
-            # plt.plot(b2, b2, 'bo', label='Data points for French')
-            # plt.plot(x[:, 1], yreg, label='Line')
-            # plt.xlabel('x')
-            # plt.ylabel('y')
-            # plt.title('English and french')
-            # plt.legend()
-            # plt.show()
             # time.sleep(0.1)
 
             if dLogLike(x, y, w) > epsilon:
@@ -143,12 +127,11 @@ def dLogLike(x, y, w):
     for j in range(len(y)):
         for i in range(np.size(x[0, :])):
             deltal[j, i] = x[j, i] * (y[j] - logistic(x[j, :], w))
-    deltal = deltal.sum(axis=1)
+    deltal = deltal.sum(axis=0)
     sum = 0
     for i in range(len(deltal)):
         sum = sum + deltal[i]**2
     deltal = np.sqrt(sum)
-    print(deltal)
     return deltal
 
 
