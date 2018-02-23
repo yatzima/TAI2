@@ -63,6 +63,7 @@ def dSSE(x, y, w):
         i = i + 1
     gradient_w = [-2 * sum(sum1), -2 * sum(sum2)]
     gradval = np.math.sqrt(gradient_w[0]**2 + gradient_w[1]**2)
+    print(gradval)
     return gradval
 
 
@@ -77,7 +78,7 @@ x2_scaled = (x2 - np.min(x2)) / (np.max(x2) - np.min(x2))
 y2_scaled = (y2 - np.min(y2)) / (np.max(y2) - np.min(y2))
 
 # Constants
-alpha = 1
+alpha = 0.1
 epsilon = 0.001
 
 # Add column of ones to X array

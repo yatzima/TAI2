@@ -69,9 +69,9 @@ def updateWeight(x_i, y_i, w, alpha):
     return w
 
 
-# Define the perceptron with batch upgrade
+# Define the perceptron with stochastic update
 def perceptron(x, y):
-    w = np.ones(np.size(x[0, :])) * 0.1  # initialize w
+    w = np.ones(np.size(x[0, :]))  # initialize w
     y_hat = hw(x, w)
     missclassific = loss(y_hat, y)
     t = 0
@@ -107,6 +107,7 @@ y_hat, w_hat = perceptron(x_scaled, y)  # Run the perceptron
 
 
 print("Missclassifications: %d" %loss(y_hat, y))
+print(w_hat)
 plt.close("all")
 plt.figure(1)
 redlabel_added = False

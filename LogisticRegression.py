@@ -15,7 +15,7 @@ a2 = (a2 - np.min(a2)) / (np.max(a2) - np.min(a2))
 b1 = (b1 - np.min(b1)) / (np.max(b1) - np.min(b1))
 b2 = (b2 - np.min(b2)) / (np.max(b2) - np.min(b2))
 
-alpha = 0.1
+alpha = 0.5
 
 
 # Reader function for the LIBSVM format. The
@@ -108,18 +108,6 @@ def stochLogRegression(x, y):
 
             print(missclassific)
 
-            # plt.figure(1)
-            # yreg = (-w[0]-w[1]*x[:, 1])/w[2]
-            # plt.plot(a1, a2, 'ro', label='Data points for English')
-            # plt.plot(b2, b2, 'bo', label='Data points for French')
-            # plt.plot(x[:, 1], yreg, label='Line')
-            # plt.xlabel('x')
-            # plt.ylabel('y')
-            # plt.title('English and french')
-            # plt.legend()
-            # plt.show()
-            # time.sleep(0.1)
-
             if missclassific < 0:
                 break
     return y_hat, w
@@ -172,6 +160,16 @@ for i in range(len(x[:, 0])):
             bluelabel_added = True
     else:
         plt.plot(x[i, 1], x[i, 2], 'g*', label='Unclassified')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('English and french')
+plt.legend()
+plt.show()
+
+plt.figure(3)
+resultinglog = logistic(w, x)
+plt.plot(a1, a2, 'ro', label='Data points for English')
+plt.plot(x[:, 1], resultinglog, label='Line')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title('English and french')
