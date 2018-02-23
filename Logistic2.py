@@ -57,8 +57,8 @@ def scale(x):
 
 # Define the activation function (heaviside)
 # Returns classifications for all objects
-def hw(x, w):
-    return np.heaviside(np.dot(w, x.T), 0)
+def hw(x):
+    return 1 * (x > 0.5)
 
 
 # Define the Perceptron Learning Rule
@@ -79,15 +79,15 @@ def logistic(x, w):
 # Define the perceptron with stochastic update
 def perceptron(x, y):
     w = np.ones(np.size(x[0, :]))  # initialize w
-    y_hat = hw(x, w)
+    y_hat = hw(logistic(x.T, w))
     missclassific = loss(y_hat, y)
     t = 0
 
     alpha = 1000 / (1000 + t)
-    while missclassific > 0:           # while nbr of missclassified objects are big
+    while missclassific > 3:           # while nbr of missclassified objects are big
         i = random.randint(0, len(y)-1)         # pick random object
         w = updateWeight(x[i, :], y[i], w, alpha)      # update weights based on object i
-        y_hat = hw(x, w)                       # classify all sample points x by using h(w) to get y_hat
+        y_hat = hw(logistic(x.T, w))                       # classify all sample points x by using h(w) to get y_hat
         missclassific = loss(y_hat, y)          # calculate loss (y_hat - y)
         print(missclassific)
         alpha = 1000/(1000+t)
