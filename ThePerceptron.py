@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import time
-#from sklearn import *
-#from svmutil import *
 
 a1, a2 = np.loadtxt('salammbo_a_en', delimiter=',', unpack=True)
 b1, b2 = np.loadtxt('salammbo_a_fr', delimiter=',', unpack=True)
