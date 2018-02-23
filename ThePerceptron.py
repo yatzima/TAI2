@@ -58,7 +58,7 @@ def hw(x, w):
     return np.heaviside(np.dot(w, x.T), 0)
 
 
-# Define the Perceptron Learning Rule
+# Define the Perceptron Learning Rule. Updates weights based on example (x_i, y_i)
 def updateWeight(x_i, y_i, w, alpha):
     #For nbrOfWeights
     for i in range(len(w)):

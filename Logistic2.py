@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import random
 import time
 #from sklearn import *
@@ -147,12 +148,35 @@ plt.title('English and french')
 plt.legend()
 plt.show()
 
-
-
 plt.figure(2)
 plt.plot(x, logistic(x, w_hat))
+xreg2 = [np.ones(50), np.linspace(-1.5, 1.5), np.linspace(-1.5, 1.5)]
+xreg2 = np.matrix(xreg2)
+yreg2 = 1 / (1 + np.exp(-xreg2 + w_hat[0]))
+fig=plt.figure(2)
+#ax = fig.add_subplot(111, projection='3d')
+#ax.scatter(xs = x_scaled[:,1], ys= x_scaled[:,2], zs=np.transpose(logistic(np.transpose(x_scaled), np.transpose(w_hat.T))), zdir='z', s=20)
+#ax.plot_surface(X = xreg2[:,1], Y= xreg2[:,2], Z=1 / (1 + np.exp(-(np.matrix(w_hat))*xreg2)))
+plt.plot(x_scaled*np.transpose(np.matrix(w_hat)), np.transpose(logistic(np.transpose(x_scaled), np.transpose(w_hat.T))), 'bo', label='Points')
+plt.plot(xreg2, yreg2, label = 'Sigmoid')
+#ax.view_init(azim=45, elev=0)
+#ax.set_zbound(lower=0, upper=1)
 plt.xlabel('x1')
 plt.ylabel('x2')
 plt.title('English and french')
+plt.legend()
+plt.show()
+
+plt.figure(7)
+xreg = (np.ones(50), np.linspace(-1, 1), np.linspace(-1, 1))
+yreg3 = 1/(1+ np.exp(-np.transpose(np.matrix(w_hat)*xreg)))
+x4 = np.matrix(w_hat)*xreg
+x5 = np.matrix(w_hat) * np.transpose(x_scaled)
+y5 = logistic(np.transpose(x_scaled), w_hat)
+plt.plot(np.transpose(x4), yreg3, label='x')
+plt.plot(x5, y5, 'ro', label='p')
+plt.xlabel('Number of characters')
+plt.ylabel('Number of A')
+plt.title('English - Stochastic gradient descent')
 plt.legend()
 plt.show()
